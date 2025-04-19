@@ -1,0 +1,148 @@
+@startuml
+
+class User {
+    * id Int <<PK>>
+    username String 
+    password String
+    * role_id String <<FK>>
+    first_name String
+    last_name String
+    email String
+    gender Gender
+    dob: String
+    is_banned Boolean
+    created_at Date
+    updated_at Date
+}
+
+Enum Gender {
+    Male,
+    Female,
+    Other
+}
+
+class Role {
+    id Int <<PK>>
+    detail String
+    created_at Date
+    updated_at Date
+}
+
+class User_X_Role {
+    user_id String <<PK>>
+    role_id String <<PK>>
+    created_at Date
+    updated_at Date
+}
+
+class Board {
+    id String <<PK>>
+    name String
+    description String
+    channel_id String <<FK>>
+    user_id String <<PK>>
+    created_at Date
+    updated_at Date
+}
+
+class Channel {
+    id String <<PK>>
+    name String 
+    description
+    user_id String <<FK>>
+    created_at Date
+    updated_at Date
+
+}
+
+class Board_Moderator {
+    user_id String <<PK>>
+    board_id String <<PK>>
+    created_at String
+    updated_at String
+}
+
+class Channel_Moderator {
+    user_id String <<PK>>
+    channel_id String <<PK>>
+    create_at String
+    updated_at String
+}
+
+class Board_Permission {
+    board_id String <<FK>>
+    role_id String <<FK>>
+    can_view Boolean
+    can_post Boolean
+    can_moderate Boolean
+    created_at Data
+    updated_at Data
+}
+
+class Post {
+    id String <<PK>>
+    topic String
+    detail String
+    board_id String <<FK>>
+    user_id String <<FK>>
+    created_at String
+    updated_at String
+}
+
+class Comment {
+    id String <<PK>>
+    detail String
+    post_id String <<PK>>
+    board_id <<FK>>
+    user_id <<PK>>
+    created_at String
+    updated_at String
+}
+
+class Ban_Reason {
+    id String <<PK>>
+    detail String
+    created_at String
+    updated_at String
+}
+
+class Banned_User {
+    user_id String <<PK>>
+    ban_reason_id <<PK>>
+    case_detail String
+    banded_untill String
+    record_by String <<PK>>
+    created_at String
+    updated_at String
+}
+
+' Relationship definitions
+User ||--o{ Banned_User : "is banned"
+Ban_Reason ||--o{ Banned_User : "reason for"
+Banned_User }o--|| User : "recorded by"
+
+Post --> User : "authored by"
+Post --> Board : "posted to"
+
+Comment --> Post : "on post"
+Comment --> User : "written by"
+Comment --> Board : "in board"
+
+User ||--o{ User_X_Role : has
+Role ||--o{ User_X_Role : has
+
+Channel --> User : "created by"
+Channel ||--o{ Board : "contains"
+Board --> Channel : "belongs to"
+Board --> User : "created by"
+
+User --> Gender
+
+Board ||--o{ Board_Moderator : "moderated by"
+User ||--o{ Board_Moderator : "moderates"
+User ||--o{ Channel_Moderator: "moderates"
+Channel ||--o{ Channel_Moderator : "moderated by"
+
+Board ||--o{ Board_Permission : "defines"
+Role ||--o{ Board_Permission : "grants"
+@enduml
